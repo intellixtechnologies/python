@@ -1,4 +1,3 @@
-# Download the helper library from https://www.twilio.com/docs/python/install
 from flask import Flask,jsonify,request
 
 app = Flask(__name__)
@@ -20,12 +19,12 @@ def callstatus():
         phone = reqdata['phone']
         status = reqdata['broadcaststatus']
         params = reqdata['params']
-        
-        print("fname: {}\n lname: {} \n phone: {}\n braodcaststatus: {}\n params:{}".format(fname,lname,phone,status,params))
+        smsdelivered = reqdata['smsdelivered']
+        print("fname: {}\n lname: {} \n phone: {}\n braodcaststatus: {}\n smsdelivered: {}\n params:{}".format(fname,lname,phone,status,smsdelivered,params))
     except:
         raise
-    #print(jsonify({"status":"call successful"}))
-    return (jsonify({"status":200}))
+    
+    return (jsonify({"status":200, "fname":reqdata['fname'], "lname":reqdata['lname'],"phone":reqdata['phone'],"status":reqdata['broadcaststatus'],"smsdelivered":reqdata['smsdelivered'],"params":reqdata['params']}))
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port=5555)
 
