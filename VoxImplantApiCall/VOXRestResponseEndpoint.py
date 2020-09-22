@@ -10,15 +10,15 @@ def main(request):
     #try:
 
     #default values 
-    custommsg = "test custom msg"
-    custommsg1 = "test custom msg1"
-    cust_callbk= "N"
+    custommsg = ""
+    custommsg1 = ""
+    cust_callbk= ""
     time = "00:00:00"
     date = "0000-00-00"
-    message = "test"
-    custom_msg_yn = "N"
-    time_stmp = "0000-00-00 00:00:00"
-    
+    message = ""
+    custom_msg_yn = ""
+    #time_stmp = "0000-00-00 00:00:00"
+    sms_txt = ""
     
     fname = reqdata['fname']
     lname = reqdata['lname']
@@ -27,7 +27,9 @@ def main(request):
     params_str = reqdata['params']
     params = json.loads(params_str)
     smsdelivered = reqdata['smsdelivered']
-
+    if "smstext" in reqdata:
+        sms_txt = reqdata["smstext"] 
+    print("smstext: {}".format(sms_txt))
     #params values
     if "custommsg" in params:
         custommsg = params["custommsg"]
@@ -42,8 +44,8 @@ def main(request):
     if "message" in params:
         message = params["message"]
     if "custom_msg_yn" in params:
-        custom_msg_yn = params["custom_msg_yn"]
-    sms_txt = "test msg"
+        custom_msg_yn = params["custom_msg_yn"]        
+
     time_stmp = datetime.now()
     date_raw = date_raw.strip()
     date = (date_raw.split('T'))[0]
@@ -95,7 +97,8 @@ def main(request):
     try:
         with db.connect() as conn:
             res = conn.execute(stmt,a=phone, b=fname, c=lname, d=custommsg, e=custommsg1, f=sms_txt, g=status, h=smsdelivered, i=cust_callbk, j=custom_msg_yn, k=message, l=time_stmp, m=date, n=time)
-        print(res)         
+            conn.commit()
+            print(res)         
     except Exception as e:
         return 'Error: {}'.format(str(e))
     return 'Process Successful'

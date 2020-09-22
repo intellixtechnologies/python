@@ -15,7 +15,7 @@ def callRobodialler(request):
     dbdict = {"phone":""}
     print('Received call in  method callRobodialler..\n')
     request_json = request.get_json()
-    if (not(request_json) or (request_json['access_key']!=apikey)):
+    if (not(request_json) or (request_json['access_token']!=apikey)):
         return 'Access denied'
     if (request_json) and ('phone_number' in request_json) and ('broadcast_msg' in request_json) and ('smstext' in request_json) and ('customer_fname' in request_json) and ('customer_lname' in request_json):
         dict_["phone_number"] = request_json['phone_number']

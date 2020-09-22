@@ -1,25 +1,44 @@
 import requests
 import json
-endpoint_url="https://kit.voximplant.com/api/v3/scenario/runScenario" #RunSCenario
+import time
+from flask import jsonify
+def hello_world(request):
 
-request_parameters =  dict()
-fname = "Anant" #customer fname
-lname = "Agarwal" #customer lname
-# Max variable/param length for vox is 255. 
-# So need to split between custommsg 1 and 2 if more than 255. Else send a " " for custommsg1. Don't send a Null.
-custommsg = "With the Flu season just round the corner, Cardinal Health is happy to announce that we are ready with your Flu shots. You can now pre-order the flu shots and book an appointment for your entire family from our website or by visiting your nearest pharmacy."
-custommsg1= "Our customer executives will be happy to assist you with more details on the overall booking process, offers and pricing. Would you like to hear back from one of our representatives? You may say Yes to schedule a call or No to disconnect."
-smstext = "Cardinal Health is ready with your Flu shots. We will call you soon with more details."
-request_parameters["phone"]="919886776312" #customer phone number
-request_parameters["phone_number_id"]="1853"
-request_parameters["scenario_id"]="15682"
-request_parameters["variables"]=json.dumps({"fname":fname,"lname":lname,"broadcaststatus":"N","custommsg":custommsg,"custommsg1":custommsg1,"smstext":smstext,"smsdelivered":"N"})
-request_parameters["domain"]="tcs"
-request_parameters["access_token"]="79b33f8548b585bb93c51e3af9adbfa1"
+    #file = request.files['file']
+    
+    #fileData=file.read()
+    #parsed = json.loads(fileData)
 
-print(request_parameters)
+    parsed = request.get_json(force=True)
+    
+    msg = parsed["broadcast_msg"]
+    if(len(msg)>255):
+        custmsg = msg[0:254]
+        custmsg1 = msg[255:len(msg)]
+    else:
+        custmsg = msg
+        custmsg1 = ' '
 
-resp=requests.post(url=endpoint_url,data=request_parameters)
+    endpoint_url="https://kit.voximplant.com/api/v3/scenario/runScenario" #RunSCenario
+    request_parameters =  dict()
 
-print(resp.status_code)
-print((json.loads(resp.text))) #Only status of this call will be received. For Details around the call, check the flask API
+    request_parameters["phone"]=parsed["phone_number"] #customer phone number
+    request_parameters["phone_number_id"]="1853"
+    request_parameters["scenario_id"]="15682"
+    request_parameters["variables"]=json.dumps({"fname":parsed["customer_fname"],"lname":parsed["customer_lname"],"broadcaststatus":"N","custommsg":custmsg,"custommsg1":custmsg1,"smstext":parsed["smstext"],"smsdelivered":"N"})
+    request_parameters["domain"]="tcs"
+    request_parameters["access_token"] = "79b33f8548b585bb93c51e3af9adbfa1"
+
+
+    print(request_parameters)
+
+    resp=requests.post(url=endpoint_url,data=request_parameters)
+
+    time.sleep(10)
+
+
+    print(resp.status_code)
+    print(resp.text) #Only status of this call will be received. For Details around the call, check the flask API
+    
+    return(json.loads(resp.text))
+    #return(jsonify({"result":resp.text}))       
