@@ -1,6 +1,6 @@
 # python
 All Python POCs
-1) VoxImplantKit API Call for outbound calls
+1) STARC
 
 Name Of Solution : STARC (Smart Telephony Assistant For Responsive Communication)
 Platform: Google Cloud Platform
